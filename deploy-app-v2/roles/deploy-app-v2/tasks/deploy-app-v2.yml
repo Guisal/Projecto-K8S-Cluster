@@ -1,0 +1,59 @@
+- name: Instalando o pip
+  apt:
+    name: 
+      - python-pip
+    state: present
+  
+- name: Atualiza o pip
+  shell: pip install --upgrade pip
+
+- name: Instalando dependencias do modulo do k8s v2
+  shell: pip install openshift pyyaml 
+
+#- name: Instalando dependencias do modulo do k8s
+  #pip:
+  #  name:
+  #    - openshit
+  #    - PyYAML
+  #  state: present
+
+- name: Copiando o arquivo de deployment da app v1
+  template:
+    src: app-v1.yml.j2
+    dest: /opt/giropops/app-v1.yml
+    owner: root
+    group: root
+    mode: 0644
+  register: copiando_deploy_app_v1
+
+- name: Copiando o arquivo de deployment da app v2
+  template:
+    src: app-v2.yml.j2
+    dest: /opt/giropops/app-v2.yml
+    owner: root
+    group: root
+    mode: 0644
+  register: copiando_deploy_app_v2
+
+- name: Deploy da app-v2
+  k8s:
+    state: present
+    namespace: default
+    src: /opt/giropops/app-v2.yml
+
+
+- name: Scale down da app-v1
+  k8s:
+    state: present
+    namespace: default
+    src: /opt/giropops/app-v1.yml  
+
+- name: Dentro de 2 min, o app-v1 será removido. Precione Crlt+c para cancelar
+  pause:
+    minutes: 2
+
+- name: Removendo app-v1
+  k8s:
+    state: absent
+    namespace: default
+    src: /opt/giropops/app-v1.yml
