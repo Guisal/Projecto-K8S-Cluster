@@ -14,7 +14,7 @@ Necessário adicionar os ips das máquinas criadas no arquivo hosts.
 [k8s-master] ip público
 K8S_MASTER_NODE_IP= Ip privado da mesma instância
 
-[k8s-workers] ip público das outras intâncias
+[k8s-workers] ip público das outras instâncias
 
 
 Dependências
